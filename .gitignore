@@ -1,0 +1,18 @@
+# visitor logs (contain viewer data — do not commit)
+logs/
+
+# generated single-file build
+dist/
+
+# python
+__pycache__/
+*.pyc
+.venv/
+venv/
+
+# streamlit local secrets
+.streamlit/secrets.toml
+
+# os
+.DS_Store
+Thumbs.db
