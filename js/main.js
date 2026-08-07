@@ -191,9 +191,7 @@
     if (!touring) return;
     if (tourIdx >= tourActs.length) { tourStop(); return; }
     const act = tourActs[tourIdx++];
-    const y = (window.pageYOffset || document.documentElement.scrollTop || 0);
-    const top = Math.max(0, act.getBoundingClientRect().top + y);
-    window.scrollTo({ top, behavior: "smooth" });
+    try { act.scrollIntoView({ behavior: "smooth", block: "start" }); } catch (e) { act.scrollIntoView(); }
     const line = act.dataset.narrate || "";
     setTimeout(() => {
       if (!touring) return;
@@ -567,17 +565,13 @@
       const target = document.querySelector(`[data-nav="${n.dataset.nav}"]`);
       const doScroll = () => {
         if (!target) return;
-        const y = (window.pageYOffset || document.documentElement.scrollTop || 0);
-        const top = Math.max(0, target.getBoundingClientRect().top + y);
-        window.scrollTo({ top, behavior: "smooth" });
-        // hard fallback in case a smooth-scroll gets interrupted
-        setTimeout(() => {
-          const still = Math.abs((window.pageYOffset || document.documentElement.scrollTop) - top);
-          if (still > 4) window.scrollTo(0, top);
-        }, 700);
+        // scrollIntoView scrolls whatever container is actually scrollable —
+        // essential inside the Streamlit component iframe, where window.scrollTo
+        // targets the wrong scroller.
+        try { target.scrollIntoView({ behavior: "smooth", block: "start" }); }
+        catch (e) { target.scrollIntoView(); }
       };
-      // let the body regain scroll (overflow reset) before scrolling
-      if (wasOpen) setTimeout(doScroll, 80); else doScroll();
+      if (wasOpen) setTimeout(doScroll, 90); else doScroll();
       collapseNav();
     });
   });

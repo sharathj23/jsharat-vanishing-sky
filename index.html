@@ -35,15 +35,15 @@
 
   <!-- ===================== NARRATOR CONTROL (quiet) ===================== -->
   <div id="hud" role="region" aria-label="Narration controls">
+    <button id="jarvis-toggle" class="hud-btn" aria-pressed="false" title="Toggle Drasa voice narration">
+      <span class="hud-orb" aria-hidden="true"><span class="hud-orb-core"></span></span>
+      <span class="hud-label">Drasa <span class="hud-state">off</span></span>
+      <span id="jarvis-eq" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i></span>
+    </button>
     <button id="tour-toggle" class="hud-btn hud-btn--tour" type="button" title="Play the whole story — narrated, hands-free">
       <span class="hud-play" aria-hidden="true">▶</span>
       <span class="hud-label">Auto-guide</span>
     </button>
-    <button id="jarvis-toggle" class="hud-btn" aria-pressed="false" title="Toggle Drasa voice narration">
-      <span class="hud-orb" aria-hidden="true"><span class="hud-orb-core"></span></span>
-      <span class="hud-label">Drasa <span class="hud-state">off</span></span>
-    </button>
-    <div id="jarvis-eq" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i></div>
   </div>
 
   <!-- Draggable, closeable narration caption (shows only while Drasa voice is on) -->
@@ -114,14 +114,16 @@
       <div class="act-card fade-card">
         <p class="kicker">The sky we're switching off</p>
         <h2 id="fade-caption">A sky brimming with stars.</h2>
-        <canvas id="fading-sky" aria-label="A night sky that fades from thousands of stars and a bright Milky Way to a near-empty, light-polluted orange glow as the years advance from 1950 to today"></canvas>
-        <div class="fade-control">
+        <div class="fade-stage">
+          <canvas id="fading-sky" aria-label="A night sky that fades from thousands of stars and a bright Milky Way to a near-empty, light-polluted orange glow as the years advance from 1950 to today"></canvas>
           <div class="fade-year" aria-hidden="true"><span id="fade-year-num">1950</span></div>
-          <input type="range" id="fade-slider" min="0" max="100" value="0"
-            aria-label="Move across the years from 1950 to today" />
-          <div class="fade-labels"><span>1950 — a river of stars</span><span>Today — an amber haze</span></div>
-          <p class="fade-hint"><span aria-hidden="true">↔</span> Move your cursor across the bar to travel through the years</p>
+          <div class="fade-control">
+            <input type="range" id="fade-slider" min="0" max="100" value="0"
+              aria-label="Move across the years from 1950 to today" />
+            <div class="fade-labels"><span>1950 — a river of stars</span><span>Today — an amber haze</span></div>
+          </div>
         </div>
+        <p class="fade-hint"><span aria-hidden="true">↔</span> Move your cursor across the bar to travel through the years</p>
       </div>
     </section>
 
@@ -453,11 +455,6 @@
         <p>I wanted to visualize something everyone shares but almost no one notices they're losing. The night sky is the one view every human who ever lived has held in common for 200,000 years — and in a single generation, artificial light has quietly erased it for a third of humanity.</p>
         <p>This isn't a story told through a static chart. As you scroll, the real star-field behind the words dims in real time, exactly as it has over our cities. <strong>Drasa</strong>, an AI guide, walks you through the loss so the data feels less like statistics and more like standing outside, looking up. The goal is a single moment of <em>"I had no idea"</em> — followed by the hopeful twist that this is the one kind of pollution that disappears the instant we choose to switch off a light.</p>
         <p class="about-signoff">— Sharath, Analyticon 2026 VizCon</p>
-        <p class="about-contact">
-          <a href="https://phonetool.amazon.com/users/jsharat" target="_blank" rel="noopener">
-            <span aria-hidden="true">📇</span> Sharath on Phone Tool
-          </a>
-        </p>
       </div>
 
       <!-- Walk the night -->
@@ -466,11 +463,11 @@
         <p class="about-note">Seven short chapters, each a different way into the same sky. Use the star-nav on the left to move around.</p>
         <div class="about-chapters">
           <div class="chapter"><h4>✦ Genesis</h4><p>Meet your galaxy, then sweep one patch of sky from 1950 to today and watch the stars thin out.</p></div>
-          <div class="chapter"><h4>✦ The Dimming</h4><p>The number that stops people cold — one in three of us can no longer see the Milky Way.</p></div>
-          <div class="chapter"><h4>✦ Skydial</h4><p>A hands-on Bortle dial: drag from wilderness to downtown and watch the sky empty in real time.</p></div>
+          <div class="chapter"><h4>✦ The Dimming</h4><p>The number that stops people cold — one in three of us can no longer see the Milky Way — then drag a slider across one lifetime of change.</p></div>
           <div class="chapter"><h4>✦ Glow Map</h4><p>A world map of where the sky burns brightest — and whose night has already gone.</p></div>
-          <div class="chapter"><h4>✦ Your Night</h4><p>Choose a city and meet the exact sky its people live under tonight.</p></div>
+          <div class="chapter"><h4>✦ Your Night</h4><p>Choose a city, meet the exact sky its people live under, then enter your birth year to see your own lifetime of lost stars.</p></div>
           <div class="chapter"><h4>✦ Stardust</h4><p>The personal heart: childhood memories, a short story, and why any of this matters.</p></div>
+          <div class="chapter"><h4>▶ Auto-guide</h4><p>Short on time? Press it and Drasa narrates the whole story, hands-free, scrolling as she goes.</p></div>
         </div>
       </div>
 

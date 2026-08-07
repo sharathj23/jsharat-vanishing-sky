@@ -162,6 +162,15 @@ window.SPEC = (function () {
     { name: "London, UK", bortle: 8, note: "Centuries of astronomy history, now under a sky where the galaxy is invisible." },
     { name: "Tokyo, Japan", bortle: 8, note: "37 million people; almost none can see more than a few dozen stars." },
     { name: "Mumbai, India", bortle: 8, note: "A dense orange dome. Star visibility collapses to the very brightest few." },
+    { name: "Sydney, Australia", bortle: 7, note: "A bright coastal sky — the Milky Way is lost, though a few hundred stars linger." },
+    { name: "Toronto, Canada", bortle: 8, note: "A broad urban glow; only the brightest stars and planets break through." },
+    { name: "New York City, USA", bortle: 8, note: "One of the brightest skies on Earth — the galaxy is completely invisible." },
+    { name: "Paris, France", bortle: 8, note: "The 'City of Light' lives up to its name; the night sky is washed to a glow." },
+    { name: "Mexico City, Mexico", bortle: 8, note: "A vast metropolis of ~21 million under a near-starless dome." },
+    { name: "São Paulo, Brazil", bortle: 8, note: "South America's largest city — its skyglow erases all but a handful of stars." },
+    { name: "Beijing, China", bortle: 8, note: "Haze and light together leave the sky almost blank on most nights." },
+    { name: "Cairo, Egypt", bortle: 8, note: "A sprawling glow along the Nile; the Milky Way hasn't been visible here in decades." },
+    { name: "Dubai, UAE", bortle: 9, note: "Among the most brightly lit cities anywhere — the night barely gets dark." },
     { name: "Hong Kong", bortle: 9, note: "Among the most light-polluted skies ever measured — up to 1,000× brighter than natural." },
     { name: "Singapore", bortle: 9, note: "The entire population lives so brightly lit the eye never fully dark-adapts." }
   ];
