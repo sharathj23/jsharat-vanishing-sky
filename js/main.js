@@ -18,16 +18,30 @@
 
   const SEQ_NAMES = ["INIT", "INHERIT", "VANISH", "SIMULATE", "MAP", "CITY", "TREND", "KNOW", "RECOVER", "LOOK-UP"];
 
-  // robust scroll that works both on a normal page and inside the Streamlit iframe
+  // simple, reliable scroll
   function scrollToEl(target) {
     if (!target) return;
-    try { target.scrollIntoView({ behavior: "smooth", block: "start" }); } catch (_) {}
-    const sc = document.scrollingElement || document.documentElement || document.body;
-    if (sc) {
-      const top = Math.max(0, target.getBoundingClientRect().top + (sc.scrollTop || 0));
-      try { sc.scrollTo({ top, behavior: "smooth" }); } catch (_) { sc.scrollTop = top; }
-    }
+    try { target.scrollIntoView({ behavior: "smooth", block: "start" }); }
+    catch (_) { try { target.scrollIntoView(); } catch (__) {} }
   }
+
+  // NAV via event delegation, attached immediately so no later error can stop it.
+  // Handles section jumps here; panels are handled if openPanel is ready.
+  document.addEventListener("click", function (e) {
+    const n = e.target.closest ? e.target.closest(".cnode") : null;
+    if (!n) return;
+    e.preventDefault();
+    const sn = document.getElementById("starnav");
+    if (sn) sn.classList.remove("open");
+    if (n.dataset.panel) {
+      if (typeof window.__openPanel === "function") window.__openPanel(n.dataset.panel);
+      return;
+    }
+    if (n.dataset.nav) {
+      const t = document.querySelector('[data-nav="' + n.dataset.nav + '"]');
+      scrollToEl(t);
+    }
+  });
 
   /* ---- "The sky we're switching off": hover-driven slider -> fading-sky canvas ---- */
   const fadeSlider = document.getElementById("fade-slider");
@@ -568,16 +582,8 @@
     }
   }
 
-  nodes.forEach(n => {
-    n.addEventListener("click", () => {
-      if (n.dataset.panel) { openPanel(n.dataset.panel); collapseNav(); return; }
-      const wasOpen = !!openPanelName;
-      if (wasOpen) closePanel(true);
-      const target = document.querySelector(`[data-nav="${n.dataset.nav}"]`);
-      if (wasOpen) setTimeout(() => scrollToEl(target), 90); else scrollToEl(target);
-      collapseNav();
-    });
-  });
+  // expose openPanel to the top-level delegated click handler
+  window.__openPanel = openPanel;
 
   // close buttons (both panels)
   document.querySelectorAll("[data-close], .about-close").forEach(btn => {
