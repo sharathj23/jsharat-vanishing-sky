@@ -12,6 +12,8 @@ those load fine from any host and keep the bundle small.
 
 import os
 import re
+import base64
+import mimetypes
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 
@@ -40,6 +42,22 @@ def build_inline_html():
         code = _read(rel)
         pattern = re.compile(r'<script src="%s"></script>' % re.escape(rel))
         html = pattern.sub(lambda m: f"<script>\n{code}\n</script>", html)
+
+    # 2b) inline local images (e.g. assets/my-dark-sky.jpg) as data URIs so the
+    #     single-file bundle is fully self-contained. CDN/remote images are left
+    #     alone; missing local files are left as-is (the onerror fallback covers them).
+    def _inline_img(m):
+        quote, rel = m.group(1), m.group(2)
+        path = os.path.join(HERE, rel)
+        if not os.path.isfile(path):
+            return m.group(0)
+        mime = mimetypes.guess_type(path)[0] or "image/jpeg"
+        with open(path, "rb") as fh:
+            b64 = base64.b64encode(fh.read()).decode("ascii")
+        return f'src={quote}data:{mime};base64,{b64}{quote}'
+
+    html = re.sub(r'src=(["\'])((?!https?:|data:)[^"\']+\.(?:jpg|jpeg|png|gif|webp|svg))\1',
+                  _inline_img, html, flags=re.IGNORECASE)
 
     # 3) progressive enhancement: let the Streamlit component iframe fill the window
     fit = """
