@@ -62,10 +62,10 @@
   <nav id="starnav" aria-label="Sections">
     <span class="nav-thread" aria-hidden="true"></span>
     <ul class="constellation">
-      <li><button class="cnode is-current" data-nav="genesis" type="button"><span class="dot"></span><span class="clabel">Genesis</span></button></li>
-      <li><button class="cnode" data-nav="dimming" type="button"><span class="dot"></span><span class="clabel">The Dimming</span></button></li>
-      <li><button class="cnode" data-nav="glowmap" type="button"><span class="dot"></span><span class="clabel">Glow Map</span></button></li>
-      <li><button class="cnode" data-nav="yournight" type="button"><span class="dot"></span><span class="clabel">Your Night</span></button></li>
+      <li><a class="cnode is-current" data-nav="genesis" href="#genesis"><span class="dot"></span><span class="clabel">Genesis</span></a></li>
+      <li><a class="cnode" data-nav="dimming" href="#dimming"><span class="dot"></span><span class="clabel">The Dimming</span></a></li>
+      <li><a class="cnode" data-nav="glowmap" href="#glowmap"><span class="dot"></span><span class="clabel">Glow Map</span></a></li>
+      <li><a class="cnode" data-nav="yournight" href="#yournight"><span class="dot"></span><span class="clabel">Your Night</span></a></li>
       <li><button class="cnode cnode--panel" data-panel="stardust" type="button" aria-haspopup="dialog"><span class="dot dot--gold"></span><span class="clabel">Stardust</span></button></li>
       <li><button class="cnode cnode--panel" data-panel="about" type="button" aria-haspopup="dialog"><span class="dot"></span><span class="clabel">About</span></button></li>
     </ul>
@@ -76,7 +76,7 @@
   <main id="main">
 
     <!-- ACT 0 — TITLE -->
-    <section class="act act--hero" data-act="0" data-bortle="1" data-nav="genesis" aria-label="Introduction">
+    <section id="genesis" class="act act--hero" data-act="0" data-bortle="1" data-nav="genesis" aria-label="Introduction">
       <div class="hero-inner">
         <h1 class="hero-title">The World<br/><span class="glow-word">After Dark</span></h1>
         <p class="hero-sub">For 200,000 years, every human who ever lived looked up and saw the same river of stars.<br/>Most people alive today have never seen it — and that can change.</p>
@@ -128,7 +128,7 @@
     </section>
 
     <!-- ACT 2 — THE REVEAL / core stat -->
-    <section class="act act--center" data-act="2" data-bortle="7" data-nav="dimming"
+    <section id="dimming" class="act act--center" data-act="2" data-bortle="7" data-nav="dimming"
       data-narrate="In a single lifetime, the glow of our cities erased it. Today, one in three human beings can no longer see the Milky Way at all.">
       <div class="act-card act-card--stat">
         <p class="kicker">The vanishing</p>
@@ -157,7 +157,7 @@
     </section>
 
     <!-- ACT 4 — THE WORLD MAP (choropleth) · moved up to be the 3rd tab -->
-    <section class="act act--split" data-act="4" data-bortle="6" data-nav="glowmap"
+    <section id="glowmap" class="act act--split" data-act="4" data-bortle="6" data-nav="glowmap"
       data-narrate="Seen from orbit, our lights trace where we live, work, and connect. But the brighter the map glows, the fewer stars its people can see.">
       <div class="act-panel">
         <p class="kicker">The lit planet</p>
@@ -172,7 +172,7 @@
     </section>
 
     <!-- ACT 5 — CITY PICKER -->
-    <section class="act act--split" data-act="5" data-bortle="8" data-nav="yournight"
+    <section id="yournight" class="act act--split" data-act="5" data-bortle="8" data-nav="yournight"
       data-narrate="Choose a city. This is the sky its residents actually live under tonight.">
       <div class="act-panel">
         <p class="kicker">Interactive · Your sky tonight</p>

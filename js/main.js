@@ -30,16 +30,13 @@
   document.addEventListener("click", function (e) {
     const n = e.target.closest ? e.target.closest(".cnode") : null;
     if (!n) return;
-    e.preventDefault();
     const sn = document.getElementById("starnav");
     if (sn) sn.classList.remove("open");
+    // Panels open an overlay (JS). Section tabs are real <a href="#id"> anchors
+    // and are handled NATIVELY by the browser — the most reliable method.
     if (n.dataset.panel) {
+      e.preventDefault();
       if (typeof window.__openPanel === "function") window.__openPanel(n.dataset.panel);
-      return;
-    }
-    if (n.dataset.nav) {
-      const t = document.querySelector('[data-nav="' + n.dataset.nav + '"]');
-      scrollToEl(t);
     }
   });
 
