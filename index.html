@@ -27,82 +27,45 @@
   <!-- ===================== SKID / A11Y ===================== -->
   <a class="skip-link" href="#main">Skip to content</a>
 
-  <!-- ===================== JARVIS BOOT SEQUENCE ===================== -->
-  <div id="boot" role="dialog" aria-label="System boot">
-    <div class="boot-inner">
-      <div class="boot-reticle" aria-hidden="true">
-        <span class="boot-ring"></span><span class="boot-ring r2"></span><span class="boot-core"></span>
-      </div>
-      <pre id="boot-log" aria-live="polite"></pre>
-      <button id="boot-enter" class="boot-enter" hidden>◆ ENTER THE SKY</button>
-    </div>
-  </div>
-
   <!-- ===================== FIXED CANVAS SKY (the star of the show) ===================== -->
   <div id="sky-stage" aria-hidden="true">
     <canvas id="sky-canvas"></canvas>
     <div id="light-dome"></div>
-    <div id="hud-grid"></div>
-    <div id="scanlines"></div>
   </div>
 
-  <!-- ===================== JARVIS HUD FRAME ===================== -->
-  <div id="hud-frame" aria-hidden="true">
-    <span class="corner tl"></span><span class="corner tr"></span>
-    <span class="corner bl"></span><span class="corner br"></span>
-    <div class="telemetry tl-tel">
-      <span data-tel="mode">MODE / SKY-WATCH</span>
-      <span data-tel="bortle">BORTLE / 1</span>
-      <span data-tel="sky">SKY QUALITY / PRISTINE</span>
-    </div>
-    <div class="telemetry tr-tel">
-      <span data-tel="act">SEQ / 00·INIT</span>
-      <span data-tel="stars">VISIBLE STARS / ~7,500</span>
-      <span data-tel="lat">◆ DRASA GUIDANCE SYSTEM</span>
-    </div>
-    <div class="telemetry bl-tel">
-      <span>NASA·VIIRS // FALCHI·2016 // KYBA·2023</span>
-    </div>
-  </div>
-
-  <!-- ===================== JARVIS HUD ===================== -->
-  <div id="hud" role="region" aria-label="AI narrator controls">
+  <!-- ===================== NARRATOR CONTROL (quiet) ===================== -->
+  <div id="hud" role="region" aria-label="Narration controls">
+    <button id="tour-toggle" class="hud-btn hud-btn--tour" type="button" title="Play the whole story — narrated, hands-free">
+      <span class="hud-play" aria-hidden="true">▶</span>
+      <span class="hud-label">Auto-guide</span>
+    </button>
     <button id="jarvis-toggle" class="hud-btn" aria-pressed="false" title="Toggle Drasa voice narration">
       <span class="hud-orb" aria-hidden="true"><span class="hud-orb-core"></span></span>
-      <span class="hud-label">Drasa voice <span class="hud-state">OFF</span></span>
+      <span class="hud-label">Drasa <span class="hud-state">off</span></span>
     </button>
     <div id="jarvis-eq" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i></div>
   </div>
 
-  <!-- Live subtitle for narration (accessible, always on) -->
-  <div id="subtitle" aria-live="polite"></div>
+  <!-- Draggable, closeable narration caption (shows only while Drasa voice is on) -->
+  <div id="subtitle" aria-live="polite" hidden>
+    <span id="subtitle-text"></span>
+    <button id="subtitle-close" type="button" aria-label="Hide captions">✕</button>
+  </div>
 
-  <!-- Scroll progress constellation -->
+  <!-- Scroll progress -->
   <div id="progress-rail" aria-hidden="true"><span id="progress-fill"></span></div>
 
-  <!-- First-load "how to use" hint -->
-  <div id="usehint" role="status" aria-live="polite" hidden>
-    <div class="usehint-inner">
-      <button id="usehint-close" type="button" aria-label="Dismiss guide">✕</button>
-      <p class="usehint-title">◆ How to explore</p>
-      <ul>
-        <li><span aria-hidden="true">↓</span> <strong>Scroll</strong> to descend into the night</li>
-        <li><span aria-hidden="true">◆</span> Click <strong>Drasa voice</strong> (top-right) to be guided aloud</li>
-        <li><span aria-hidden="true">✦</span> Use the <strong>star-nav</strong> (left) to jump between chapters</li>
-        <li><span aria-hidden="true">📖</span> Open <strong>Stardust</strong> for the personal story</li>
-      </ul>
-    </div>
-  </div>
+  <!-- First-load hint for the Auto-guide -->
+  <div id="tour-hint" role="status" hidden>New here? Press <strong>▶ Auto-guide</strong> and Drasa narrates the whole story, hands-free.</div>
 
   <!-- ===================== CONSTELLATION NAV (left rail) ===================== -->
   <nav id="starnav" aria-label="Sections">
     <span class="nav-thread" aria-hidden="true"></span>
     <ul class="constellation">
-      <li><button class="cnode is-current" data-target="0" type="button"><span class="dot"></span><span class="clabel">Genesis</span></button></li>
-      <li><button class="cnode" data-target="2" type="button"><span class="dot"></span><span class="clabel">The Dimming</span></button></li>
-      <li><button class="cnode" data-target="3" type="button"><span class="dot"></span><span class="clabel">Skydial</span></button></li>
-      <li><button class="cnode" data-target="4" type="button"><span class="dot"></span><span class="clabel">Glow Map</span></button></li>
-      <li><button class="cnode" data-target="5" type="button"><span class="dot"></span><span class="clabel">Your Night</span></button></li>
+      <li><button class="cnode is-current" data-nav="genesis" type="button"><span class="dot"></span><span class="clabel">Genesis</span></button></li>
+      <li><button class="cnode" data-nav="dimming" type="button"><span class="dot"></span><span class="clabel">The Dimming</span></button></li>
+      <li><button class="cnode" data-nav="glowmap" type="button"><span class="dot"></span><span class="clabel">Glow Map</span></button></li>
+      <li><button class="cnode" data-nav="yournight" type="button"><span class="dot"></span><span class="clabel">Your Night</span></button></li>
       <li><button class="cnode cnode--panel" data-panel="stardust" type="button" aria-haspopup="dialog"><span class="dot dot--gold"></span><span class="clabel">Stardust</span></button></li>
       <li><button class="cnode cnode--panel" data-panel="about" type="button" aria-haspopup="dialog"><span class="dot"></span><span class="clabel">About</span></button></li>
     </ul>
@@ -113,10 +76,10 @@
   <main id="main">
 
     <!-- ACT 0 — TITLE -->
-    <section class="act act--hero" data-act="0" data-bortle="1" aria-label="Introduction">
+    <section class="act act--hero" data-act="0" data-bortle="1" data-nav="genesis" aria-label="Introduction">
       <div class="hero-inner">
         <h1 class="hero-title">The World<br/><span class="glow-word">After Dark</span></h1>
-        <p class="hero-sub">For 200,000 years, every human who ever lived looked up and saw the same river of stars.<br/>Most people alive today never will.</p>
+        <p class="hero-sub">For 200,000 years, every human who ever lived looked up and saw the same river of stars.<br/>Most people alive today have never seen it — and that can change.</p>
         <div class="scroll-cue" aria-hidden="true">
           <span>Begin the descent</span>
           <div class="scroll-arrow"></div>
@@ -131,6 +94,17 @@
         <p class="kicker">A shared inheritance</p>
         <h2>This was everyone's sky.</h2>
         <p class="lede">The Milky Way — our own galaxy, seen edge-on — was once so bright it cast shadows. It guided navigation, seeded mythologies, and anchored calendars on every inhabited continent.</p>
+      </div>
+    </section>
+
+    <!-- ACT 1.2 — WONDER: meet your galaxy -->
+    <section class="act act--center" data-act="1.2" data-bortle="2"
+      data-narrate="First, the wonder. That soft band of light isn't just in the sky — it is our own galaxy, seen from the inside.">
+      <div class="act-card">
+        <p class="kicker">Meet your galaxy</p>
+        <h2>That band of light is home.</h2>
+        <p class="lede">The Milky Way isn't just <em>in</em> the sky — it <strong>is</strong> the sky. It's our own galaxy seen edge-on from the inside: a slowly turning disc of <strong>100–400 billion stars</strong>, about <strong>100,000 light-years</strong> across. Our Sun is just one of them, halfway out on a quiet spiral arm.</p>
+        <p class="lede">Look up at that glow and you're gazing down the length of the galaxy you live in. And every one of the <strong>8 billion people</strong> awake tonight is riding the exact same disc of stars — the one thing the whole world truly shares.</p>
       </div>
     </section>
 
@@ -152,7 +126,7 @@
     </section>
 
     <!-- ACT 2 — THE REVEAL / core stat -->
-    <section class="act act--center" data-act="2" data-bortle="7"
+    <section class="act act--center" data-act="2" data-bortle="7" data-nav="dimming"
       data-narrate="In a single lifetime, the glow of our cities erased it. Today, one in three human beings can no longer see the Milky Way at all.">
       <div class="act-card act-card--stat">
         <p class="kicker">The vanishing</p>
@@ -165,35 +139,23 @@
       </div>
     </section>
 
-    <!-- ACT 3 — THE BORTLE SIMULATOR (interactive) -->
-    <section class="act act--split" data-act="3" data-bortle="4"
-      data-narrate="This is the Bortle scale — nine steps from true darkness to inner-city glow. Drag it. Feel how quickly the universe disappears.">
-      <div class="act-panel">
-        <p class="kicker">Interactive · The Bortle Scale</p>
-        <h2>Drag the sky from wilderness to downtown.</h2>
-        <p class="lede">Astronomers rate night skies from Class 1 (pristine) to Class 9 (inner city). Move the dial and watch the stars behind this text vanish in real time.</p>
-
-        <div class="bortle-control">
-          <label for="bortle-slider" class="bortle-label">
-            Sky quality: <strong id="bortle-readout">Class 4 — Rural/Suburban</strong>
-          </label>
-          <input type="range" id="bortle-slider" min="1" max="9" step="1" value="4"
-            aria-describedby="bortle-desc" />
-          <div class="bortle-ticks" aria-hidden="true">
-            <span>1</span><span>2</span><span>3</span><span>4</span><span>5</span><span>6</span><span>7</span><span>8</span><span>9</span>
-          </div>
-          <p id="bortle-desc" class="bortle-desc">Some light pollution on the horizon; the Milky Way is visible but washed out overhead.</p>
-          <dl class="bortle-facts">
-            <div><dt>Visible stars</dt><dd id="bortle-stars">~2,500</dd></div>
-            <div><dt>Milky Way</dt><dd id="bortle-mw">Faint</dd></div>
-            <div><dt>Who lives here</dt><dd id="bortle-who">Outer suburbs, small towns</dd></div>
-          </dl>
+    <!-- ACT 2.5 — DRAG TO COMPARE: same sky, one lifetime apart -->
+    <section class="act act--center" data-act="2.5" data-bortle="6"
+      data-narrate="Drag the line across. On the left, the sky your grandparents knew. On the right, the very same view tonight.">
+      <div class="act-card cmp-card">
+        <p class="kicker">Interactive · Drag to compare</p>
+        <h2>The same sky, one lifetime apart.</h2>
+        <p class="lede">Pull the handle across the horizon. Left is a sky full of stars; right is the same place under today's glow.</p>
+        <div class="compare" id="compare" style="--x:50%;">
+          <div class="cmp-layer sky-now"><span class="cmp-tag cmp-tag-r">Now · washed out by glow</span></div>
+          <div class="cmp-layer sky-then cmp-top" id="cmp-top"><span class="cmp-tag cmp-tag-l">Then · a sky full of stars</span></div>
+          <div class="cmp-divider" id="cmp-divider"><button class="cmp-grip" id="cmp-grip" type="button" aria-label="Drag to compare then and now">⇆</button></div>
         </div>
       </div>
     </section>
 
-    <!-- ACT 4 — THE WORLD MAP (choropleth) -->
-    <section class="act act--split" data-act="4" data-bortle="6"
+    <!-- ACT 4 — THE WORLD MAP (choropleth) · moved up to be the 3rd tab -->
+    <section class="act act--split" data-act="4" data-bortle="6" data-nav="glowmap"
       data-narrate="Seen from orbit, our lights trace where we live, work, and connect. But the brighter the map glows, the fewer stars its people can see.">
       <div class="act-panel">
         <p class="kicker">The lit planet</p>
@@ -208,7 +170,7 @@
     </section>
 
     <!-- ACT 5 — CITY PICKER -->
-    <section class="act act--split" data-act="5" data-bortle="8"
+    <section class="act act--split" data-act="5" data-bortle="8" data-nav="yournight"
       data-narrate="Choose a city. This is the sky its residents actually live under tonight.">
       <div class="act-panel">
         <p class="kicker">Interactive · Your sky tonight</p>
@@ -222,46 +184,91 @@
       </div>
     </section>
 
+    <!-- ACT 5.5 — THE GOOD NEWS: the sky never left (moved from Stardust) -->
+    <section class="act act--center" data-act="5.5" data-bortle="6"
+      data-narrate="Here's the hopeful part. Rise above our city glow, and the sky is exactly as brilliant as it ever was. The stars never left — only our light hides them.">
+      <div class="act-card cosmos-gallery" style="max-width:920px;">
+        <h3><span aria-hidden="true">🛰️</span> The good news: the sky never left</h3>
+        <p class="story-note">Rise above our layer of city glow and the sky is <strong>exactly as brilliant as it ever was.</strong> These are real photographs from astronauts on the International Space Station — the same Milky Way our ancestors knew, blazing over a glowing Earth. Only our ground-level light hides it.</p>
+        <div class="gallery-grid">
+          <figure>
+            <img src="https://images-assets.nasa.gov/image/iss044e045215/iss044e045215~medium.jpg" loading="lazy"
+              alt="The Milky Way photographed from the International Space Station, above Earth's glowing airglow" />
+            <figcaption>The Milky Way from orbit <span class="fig-tag">ISS · clear sky above Earth</span></figcaption>
+          </figure>
+          <figure>
+            <img src="https://images-assets.nasa.gov/image/iss062e081621/iss062e081621~medium.jpg" loading="lazy"
+              alt="Stars of the Milky Way sparkling above the amber airglow on Earth's limb, from the ISS" />
+            <figcaption>Stars over Earth's edge <span class="fig-tag">ISS · above the haze</span></figcaption>
+          </figure>
+          <figure>
+            <img src="https://images-assets.nasa.gov/image/iss057e035382/iss057e035382~medium.jpg" loading="lazy"
+              alt="City lights blanketing Earth at night with the Milky Way overhead, seen from the ISS" />
+            <figcaption>Our city glow, from space <span class="fig-tag">ISS · the light we send up</span></figcaption>
+          </figure>
+        </div>
+        <p class="story-cite">Photographs: NASA / ISS Crew Earth Observations (public domain).</p>
+        <div class="naked-eye">
+          <p><span aria-hidden="true">🌌</span> <strong>Space vs. the city street</strong></p>
+          <p>Same planet, two skies. From orbit (first two photos), the Milky Way is unmistakable. That last photo shows why we miss it — the amber glow blanketing the land is the very light we pour upward. The universe didn't change; how we light our nights did — which means <strong>we can choose differently.</strong></p>
+        </div>
+      </div>
+    </section>
+
     <!-- ACT 6 — GENERATIONAL LOSS -->
     <section class="act act--center" data-act="6" data-bortle="7"
       data-narrate="This did not happen over centuries. Global light pollution is rising roughly ten percent every year. A child born under a sky with 250 visible stars will, by adulthood, see fewer than 100.">
       <div class="act-card">
         <p class="kicker">One lifetime</p>
-        <h2>The sky is dimming faster than we noticed.</h2>
+        <h2>It happens within a single childhood.</h2>
         <div id="loss-chart" class="loss-chart" role="img" aria-label="Line showing global sky brightness increasing about 10 percent per year, meaning the number of visible stars roughly halves over an 18-year childhood."></div>
-        <p class="lede">Artificial sky brightness is growing <strong>~9.6% per year</strong> worldwide. At that rate, a person born seeing 250 stars will watch that number fall to under 100 by the time they turn 18.</p>
+        <p class="lede">Artificial sky brightness is climbing about <strong>9.6% every year</strong> — among the fastest environmental shifts we've measured. The curve above traces what that does to one child's sky, from birth to eighteen.</p>
         <p class="source-inline">Kyba et al., <em>Citizen scientists report global rapid reductions in the visibility of stars</em>, Science (2023).</p>
       </div>
     </section>
 
-    <!-- ACT 7 — DID YOU KNOW? (trivia) -->
-    <section class="act act--center" data-act="7" data-bortle="5"
-      data-narrate="Before we go on, a few things about the night that most people never learn.">
-      <div class="trivia-wrap">
-        <h2 class="trivia-head"><span class="trivia-emoji" aria-hidden="true">🤯</span> Did You Know?</h2>
-        <div class="trivia-grid trivia-grid--4">
-          <div class="trivia-card">
-            <div class="trivia-icon" aria-hidden="true">🌌</div>
-            <h3>A Lost Galaxy</h3>
-            <p>About 1 in 3 people alive today can't see the Milky Way from home — including roughly 80% of North Americans and 60% of Europeans.</p>
-          </div>
-          <div class="trivia-card">
-            <div class="trivia-icon" aria-hidden="true">🏙️</div>
-            <h3>The 1994 Blackout</h3>
-            <p>After an earthquake blacked out Los Angeles, some residents reportedly called observatories about a strange "silvery cloud" overhead. It was the Milky Way — many had simply never seen it.</p>
-          </div>
-          <div class="trivia-card">
-            <div class="trivia-icon" aria-hidden="true">💡</div>
-            <h3>Recoverable Pollution</h3>
-            <p>Unlike CO₂ or plastic, light pollution disappears the instant you switch off a lamp — it's one of the few kinds of pollution with an instant undo.</p>
-          </div>
-          <div class="trivia-card">
-            <div class="trivia-icon" aria-hidden="true">📈</div>
-            <h3>Fading Fast</h3>
-            <p>Measured from citizen star counts, the night sky brightened about 9.6% per year (2011–2022). At that rate a child born seeing 250 stars would see under 100 by age 18.</p>
-          </div>
+    <!-- ACT 6.5 — PERSONAL: your lifetime of lost stars -->
+    <section class="act act--center" data-act="6.5" data-bortle="7"
+      data-narrate="Now make it personal. Tell me the year you were born, and I'll show you the sky you've quietly lost.">
+      <div class="act-card">
+        <p class="kicker">Interactive · Make it personal</p>
+        <h2>Your lifetime of lost stars.</h2>
+        <p class="lede">Tell me where you grew up and the year you were born. At the rate our skies have been brightening, here's roughly what has faded from that same spot in your lifetime.</p>
+        <div class="birthyear">
+          <label for="birth-place" class="visually-hidden">Where did you grow up?</label>
+          <select id="birth-place" aria-label="Where did you grow up?">
+            <option value="60">🏙️ A big city</option>
+            <option value="250" selected>🏘️ Suburbs / small city</option>
+            <option value="2500">🌾 The countryside</option>
+            <option value="5000">🏔️ A truly dark place</option>
+          </select>
+          <label for="birth-input" class="visually-hidden">Your birth year</label>
+          <input type="number" id="birth-input" min="1930" max="2026" placeholder="birth year, e.g. 1995" inputmode="numeric" />
+          <button id="birth-go" type="button">Show me</button>
         </div>
-        <p class="source-inline">Sources: Falchi et al. 2016 (Science Advances) · Kyba et al. 2023 (Science) · DarkSky International. The 1994 anecdote is widely reported (e.g. National Geographic).</p>
+        <div id="birth-result" class="birth-result" hidden aria-live="polite">
+          <div class="birth-nums">
+            <div class="birth-cell"><span class="birth-num" id="birth-then">250</span><span class="birth-lbl">stars the year you were born</span></div>
+            <div class="birth-arrow" aria-hidden="true">→</div>
+            <div class="birth-cell"><span class="birth-num birth-num--now" id="birth-now">100</span><span class="birth-lbl">stars from that same spot tonight</span></div>
+          </div>
+          <p class="birth-verdict" id="birth-verdict"></p>
+          <button id="birth-share" class="birth-share" type="button" hidden>⤓ Download my sky card</button>
+          <p class="birth-caveat">Illustrative — based on the ~9.6%/yr global brightening measured by Kyba et al. (2023), applied to the paper's 250-stars example, from the sky type you chose. Your real sky depends on where you live now.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- ACT 6.7 — A NEW THREAT: satellites -->
+    <section class="act act--center" data-act="6.7" data-bortle="2"
+      data-narrate="And now the sky has company. Even our darkest refuges are filling with satellites.">
+      <div class="act-card">
+        <p class="kicker">A new kind of light</p>
+        <h2>And now — the sky has company.</h2>
+        <div class="streak-sky" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i></div>
+        <p class="lede">Even the darkest refuges are changing. More than <strong>8,000 active satellites</strong> now circle the Earth — with <strong>tens of thousands more</strong> planned. On a clear night you can watch trains of them slide silently through the stars, streaking astronomers' photos and, more and more, catching the naked eye.</p>
+        <p class="lede">For 200,000 years the night belonged to the stars alone. Now we're learning to share it — and to ask how much light is too much.</p>
+        <p class="source-inline">Satellite counts approximate, mid-2020s (operator filings / CelesTrak).</p>
       </div>
     </section>
 
@@ -269,19 +276,27 @@
     <section class="act act--center" data-act="8" data-bortle="2"
       data-narrate="But darkness is recoverable. Unlike almost any other kind of pollution, this one vanishes the instant we choose to switch off. Dark-sky reserves are already bringing the stars back.">
       <div class="act-card">
-        <p class="kicker">The recoverable pollution</p>
-        <h2>The one kind of pollution that vanishes at the flip of a switch.</h2>
-        <p class="lede">There is no cleanup crew for the night sky — only better choices. Shielded lighting, warmer color temperatures, and <strong>200+ certified Dark Sky Places</strong> are already returning the Milky Way to millions.</p>
-        <p class="lede">The stars didn't leave. We can invite them back.</p>
+        <p class="kicker">The good news</p>
+        <h2>One of the few kinds of pollution we can actually undo.</h2>
+        <p class="lede">Here's the honest part: it isn't a single switch. It takes many small choices — and one lost habit. City glow, glowing screens, indoor light, and simply forgetting to look up all play a part. So the fix is both <strong>collective</strong> and <strong>personal</strong>. Even so, it's already working: <strong>200+ certified Dark Sky Places</strong> are bringing the Milky Way back to millions.</p>
+        <div class="action-grid">
+          <div class="action"><span aria-hidden="true">🔽</span><p>Point lights <strong>down</strong>, not up — shielded fixtures</p></div>
+          <div class="action"><span aria-hidden="true">🌡️</span><p>Choose <strong>warm</strong> bulbs (≤3000K), not harsh blue-white</p></div>
+          <div class="action"><span aria-hidden="true">⏱️</span><p><strong>Off when unused</strong> — timers and motion sensors</p></div>
+          <div class="action"><span aria-hidden="true">📵</span><p><strong>Look up</strong> — put the screen down; eyes adjust in ~20 min</p></div>
+          <div class="action"><span aria-hidden="true">🏕️</span><p>Visit a <strong>Dark Sky Park</strong> — and take someone you love</p></div>
+        </div>
+        <p class="lede">The stars didn't leave. We only have to choose to invite them back — and to look.</p>
       </div>
     </section>
 
     <!-- ACT 9 — CLOSING / PERSONAL CTA -->
     <section class="act act--hero act--outro" data-act="9" data-bortle="1"
-      data-narrate="So tonight, wherever you live, step outside and look up. The river of light is still there, waiting above the glow. The question is whether the next generation will get to see it.">
+      data-narrate="So tonight, wherever you live, step outside and look up. The river of light is still there, waiting just above the glow. Tonight is a good night to go and find it.">
       <div class="hero-inner">
         <h2 class="hero-title small">Look up<br/><span class="glow-word">tonight.</span></h2>
-        <p class="hero-sub">The Milky Way is still there — 100,000 light-years of it, arcing over the glow of our cities. Whether your children see it is a choice we make one light at a time.</p>
+        <p class="hero-sub">As kids, the sky was our screen — our calm, our play, our free show. Most of us stopped looking. It's still up there tonight, but the glow keeps rising, and our children may never get to see it.</p>
+        <p class="hero-sub" style="margin-top:18px;"><strong>It costs almost nothing.</strong> Switch off the screens and the lights, step outside, and look up — and show your kids the one thing that has quietly connected every human who ever lived, all the way out to the galaxy and the universe we're part of. Do it tonight. It may not wait.</p>
         <div class="credits">
           <p class="credits-title">The World After Dark</p>
           <p class="created-by">Created by <strong>Sharath</strong></p>
@@ -312,68 +327,11 @@
         <p class="hero-credit">Background: NASA/JPL-Caltech — the Milky Way's core in infrared</p>
       </header>
 
-      <!-- REAL NASA COSMOS GALLERY (honestly framed: telescope views, not naked-eye) -->
-      <div class="story-block cosmos-gallery">
-        <h3><span aria-hidden="true">🔭</span> The galaxy we belong to</h3>
-        <p class="story-note">An honest note: <strong>no human eye can see these colours.</strong> These are infrared, false-colour images from NASA telescopes, revealing the galactic core that dust hides from us. They show the galaxy we're <em>part of</em> — not what you'd see looking up.</p>
-        <div class="gallery-grid">
-          <figure>
-            <img src="https://images-assets.nasa.gov/image/PIA12348/PIA12348~medium.jpg" loading="lazy"
-              alt="Infrared view of the Milky Way's galactic center from NASA's Great Observatories" />
-            <figcaption>The galactic core <span class="fig-tag">infrared · false-colour</span></figcaption>
-          </figure>
-          <figure>
-            <img src="https://images-assets.nasa.gov/image/PIA03653/PIA03653~medium.jpg" loading="lazy"
-              alt="Spitzer Space Telescope image of glowing dust clouds at the Milky Way's center" />
-            <figcaption>Dust clouds at the center <span class="fig-tag">Spitzer · infrared</span></figcaption>
-          </figure>
-          <figure>
-            <img src="https://images-assets.nasa.gov/image/PIA13932/PIA13932~medium.jpg" loading="lazy"
-              alt="Spitzer view of the dense star cluster in the downtown Milky Way" />
-            <figcaption>The crowded core <span class="fig-tag">Spitzer · infrared</span></figcaption>
-          </figure>
-        </div>
-        <p class="story-cite">Images: NASA/JPL-Caltech (public domain).</p>
-
-        <div class="naked-eye">
-          <p><span aria-hidden="true">👁️</span> <strong>What the naked eye really saw</strong></p>
-          <p>From a truly dark place, the Milky Way looks nothing like neon. It's a <em>soft, silvery river of light</em> arcing across the sky — pale and colourless, yet so bright it can cast a faint shadow, threaded with dark dust lanes and thousands of individual stars. Subtle, but unmistakable. <strong>That</strong> quiet band — not the telescope colours — is exactly what our city lights have erased.</p>
-        </div>
-      </div>
-
       <!-- HOOK -->
       <div class="story-block story-quote">
         <p>Everyone says <em>don't forget your roots.</em></p>
         <p class="story-big">But most of us never learned that our truest roots aren't in any soil —<br/>they're in the stars. We are the universe's ancient stardust, briefly awake and looking back up at itself.</p>
         <p class="story-cite">Inspired by <a href="https://medium.com/did-you-know-short-fun-facts/did-you-know-youre-made-of-stardust-447fa7303bd1" target="_blank" rel="noopener">"You're Made of Stardust" — Did You Know? (Medium)</a></p>
-      </div>
-
-      <!-- STARDUST TRIVIA -->
-      <div class="story-block">
-        <h3><span aria-hidden="true">🤯</span> Did You Know?</h3>
-        <div class="trivia-grid trivia-grid--4">
-          <div class="trivia-card">
-            <div class="trivia-icon" aria-hidden="true">✨</div>
-            <h3>Made of Stardust</h3>
-            <p>The carbon, oxygen, calcium and iron in your body were forged inside stars and scattered when they died. As Carl Sagan put it, "we are made of star-stuff."</p>
-          </div>
-          <div class="trivia-card">
-            <div class="trivia-icon" aria-hidden="true">🌍</div>
-            <h3>One Shared Sky</h3>
-            <p>For ~200,000 years every human — from cave painters to pharaohs to your ancestors — looked up at the same band of stars. It may be the oldest thing we all have in common.</p>
-          </div>
-          <div class="trivia-card">
-            <div class="trivia-icon" aria-hidden="true">⏳</div>
-            <h3>Light From the Past</h3>
-            <p>Starlight takes years to reach us — from ~4 years for the nearest star to thousands for distant ones. When you look up, you're literally seeing the past.</p>
-          </div>
-          <div class="trivia-card">
-            <div class="trivia-icon" aria-hidden="true">🐢</div>
-            <h3>Not Just Us</h3>
-            <p>Artificial light at night disorients sea-turtle hatchlings, migrating birds and fireflies — disrupting species that evolved under naturally dark skies.</p>
-          </div>
-        </div>
-        <p class="story-cite">Sources: NASA (stellar nucleosynthesis) · DarkSky International (wildlife &amp; light pollution).</p>
       </div>
 
       <!-- CHILDHOOD MEMORIES -->
@@ -383,7 +341,7 @@
           <p>When I was small, my mother would feed me dinner out under the open sky. She'd point up at the stars and the big bright moon, and somehow the food went down easier with the whole cosmos watching over us. The night wasn't something to fear. It was the ceiling of our home.</p>
         </div>
         <div class="memory">
-          <p>On warm nights whole families would carry out mats and sleep beneath the open sky, and we children would lie flat on our backs and count the stars until our voices gave out — never reaching the end. We'd ask the oldest questions there are: <em>Where do they come from? How are they made? Who lit them, and how far away are they?</em> And when we finally got up to walk home, the moon came with us — following us corner to corner, and every child on that street was certain the moon was theirs alone.</p>
+          <p>On warm nights whole families would carry out mats and sleep beneath the open sky, and we children would lie flat on our backs and count the stars until our voices gave out — never reaching the end. We'd ask the oldest questions there are: <em>Where do they come from? How are they made? Who lit them, and how far away are they?</em></p>
         </div>
         <div class="memory">
           <p>I didn't know it then, but I was looking at the same sky my great-grandparents saw, and theirs before them — the one river of light that has connected every human who ever lived. I want my children to be able to look up and feel that too.</p>
@@ -397,15 +355,16 @@
         <p class="connect-sub">The same stars. The same moon. The same quiet wonder. It is our oldest, most universal inheritance — and the one we are quietly turning off.</p>
       </div>
 
-      <!-- FILM: the sky, then and now -->
+      <!-- THEN vs NOW — animated crossfade (reliable, no video buffering) -->
       <div class="story-block film-block">
-        <h3><span aria-hidden="true">🎬</span> See it for yourself</h3>
-        <p class="story-note">A short film on how the night sky looked over our cities before — and what glows there now.</p>
-        <div class="video-wrap">
-          <iframe src="https://www.youtube.com/embed/KHDfUcZTvic" title="The night sky over cities, then and now"
-            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-            allowfullscreen loading="lazy"></iframe>
+        <h3><span aria-hidden="true">🎞️</span> Sky, losing its value</h3>
+        <p class="story-note">The same night, two eras — the star-filled sky we grew up under, dissolving into the glow our cities leave behind.</p>
+        <div class="thennow" role="img" aria-label="An animation of the same landscape at night: first a sky full of stars and the Milky Way, then the same view washed out by orange city glow.">
+          <div class="tn-panel tn-then sky-then"><span class="tn-label">The sky we had</span></div>
+          <div class="tn-panel tn-now sky-now"><span class="tn-label">The sky now</span></div>
+          <div class="tn-caption">Sky, losing its value</div>
         </div>
+        <p class="story-cite">Illustration — the same view from the ground, then and now · <a href="https://youtube.com/shorts/KHDfUcZTvic" target="_blank" rel="noopener">▶ watch the short film</a> (opens in a new tab)</p>
       </div>
 
       <!-- THE STORY: Leo & Liam -->
@@ -430,6 +389,44 @@
           <p>Liam squeezed his hand. <span class="dialogue">"As soon as you feel a little stronger, we're going. You and me. We'll go find the river."</span></p>
           <p class="narrative-close">For the first time in months, the electronic noise of the world faded into the background. Connected only by the touch of their hands and a shared longing for the ancient dark, the gap between two generations vanished entirely.</p>
         </div>
+      </div>
+
+      <!-- DID YOU KNOW? — consolidated at the end of the tab -->
+      <div class="story-block">
+        <h3><span aria-hidden="true">🤯</span> Did You Know?</h3>
+        <div class="trivia-grid trivia-grid--6">
+          <div class="trivia-card">
+            <div class="trivia-icon" aria-hidden="true">⏳</div>
+            <h3>Light From the Past</h3>
+            <p>Starlight takes years to reach us — from ~4 years for the nearest star to thousands for distant ones. When you look up, you're literally seeing the past.</p>
+          </div>
+          <div class="trivia-card">
+            <div class="trivia-icon" aria-hidden="true">🔭</div>
+            <h3>The Farthest You Can See</h3>
+            <p>From a truly dark sky you can spot the Andromeda Galaxy with your bare eyes — 2.5 million light-years away, the most distant thing a human can see unaided.</p>
+          </div>
+          <div class="trivia-card">
+            <div class="trivia-icon" aria-hidden="true">🌀</div>
+            <h3>A Galactic Year</h3>
+            <p>The Sun takes about 230 million years to circle the galaxy once. The last time we were in this spot, dinosaurs were just beginning to walk the Earth.</p>
+          </div>
+          <div class="trivia-card">
+            <div class="trivia-icon" aria-hidden="true">🏙️</div>
+            <h3>The 1994 Blackout</h3>
+            <p>After an earthquake blacked out Los Angeles, some residents reportedly called observatories about a strange "silvery cloud" overhead. It was the Milky Way — many had simply never seen it.</p>
+          </div>
+          <div class="trivia-card">
+            <div class="trivia-icon" aria-hidden="true">🔵</div>
+            <h3>The LED Paradox</h3>
+            <p>Switching to cheap, bright-white LEDs saved energy — but their blue-rich glare scatters more in the air, so many cities actually got <em>brighter</em>, not darker.</p>
+          </div>
+          <div class="trivia-card">
+            <div class="trivia-icon" aria-hidden="true">🐢</div>
+            <h3>Not Just Us</h3>
+            <p>Artificial light at night disorients sea-turtle hatchlings, migrating birds and fireflies — disrupting species that evolved under naturally dark skies.</p>
+          </div>
+        </div>
+        <p class="story-cite">Sources: Falchi et al. 2016 (Science Advances) · Kyba et al. 2023 (Science) · NASA · DarkSky International.</p>
       </div>
 
       <footer class="story-foot">
@@ -463,9 +460,49 @@
         </p>
       </div>
 
+      <!-- Walk the night -->
+      <div class="about-block">
+        <h3><span aria-hidden="true">🧭</span> Walk the night</h3>
+        <p class="about-note">Seven short chapters, each a different way into the same sky. Use the star-nav on the left to move around.</p>
+        <div class="about-chapters">
+          <div class="chapter"><h4>✦ Genesis</h4><p>Meet your galaxy, then sweep one patch of sky from 1950 to today and watch the stars thin out.</p></div>
+          <div class="chapter"><h4>✦ The Dimming</h4><p>The number that stops people cold — one in three of us can no longer see the Milky Way.</p></div>
+          <div class="chapter"><h4>✦ Skydial</h4><p>A hands-on Bortle dial: drag from wilderness to downtown and watch the sky empty in real time.</p></div>
+          <div class="chapter"><h4>✦ Glow Map</h4><p>A world map of where the sky burns brightest — and whose night has already gone.</p></div>
+          <div class="chapter"><h4>✦ Your Night</h4><p>Choose a city and meet the exact sky its people live under tonight.</p></div>
+          <div class="chapter"><h4>✦ Stardust</h4><p>The personal heart: childhood memories, a short story, and why any of this matters.</p></div>
+        </div>
+      </div>
+
+      <!-- What surprised me -->
+      <div class="about-block">
+        <h3><span aria-hidden="true">💡</span> What stopped me in my tracks</h3>
+        <div class="stat-grid">
+          <div class="statcard"><div class="statnum">1 in 3</div><p>people alive today can't see the Milky Way from home</p></div>
+          <div class="statcard"><div class="statnum">~80%</div><p>of North Americans live under skies too bright for it</p></div>
+          <div class="statcard"><div class="statnum">9.6%/yr</div><p>how fast the night sky is brightening, worldwide</p></div>
+          <div class="statcard"><div class="statnum">200,000 yrs</div><p>every human who ever lived shared this one view</p></div>
+          <div class="statcard"><div class="statnum">83%</div><p>of the world already lives under light-polluted skies</p></div>
+          <div class="statcard"><div class="statnum">2.5M ly</div><p>Andromeda — the farthest thing your bare eyes can reach</p></div>
+        </div>
+      </div>
+
+      <!-- How it answers the brief -->
+      <div class="about-block">
+        <h3><span aria-hidden="true">🎯</span> How it answers the brief</h3>
+        <p class="about-note">Built around VizCon 2026 — "How the world lives, thrives, and connects" — and the five things the judges weigh.</p>
+        <div class="crit">
+          <div class="crit-row"><div class="crit-head"><span>Storytelling &amp; impact</span><span class="crit-pct">30%</span></div><p>A first-person arc from childhood wonder, through loss, to hope — with a sky that dims as you read and a short story to close. Made to be felt, not skimmed.</p></div>
+          <div class="crit-row"><div class="crit-head"><span>Discovery &amp; innovation</span><span class="crit-pct">25%</span></div><p>Genuine "I had no idea" facts, plus formats few will try: a scroll that erases the real Milky Way, a hover-through-the-years sky, and a face built from starlight.</p></div>
+          <div class="crit-row"><div class="crit-head"><span>Visual design</span><span class="crit-pct">20%</span></div><p>One calm night palette throughout, a hand-built star-field engine, soft nebula, and real NASA photography — motion always in service of the story.</p></div>
+          <div class="crit-row"><div class="crit-head"><span>Data quality &amp; inclusivity</span><span class="crit-pct">15%</span></div><p>Every figure traced to peer-reviewed sources, an honest note on what the eye truly sees, WCAG-AA contrast, keyboard support and captions.</p></div>
+          <div class="crit-row"><div class="crit-head"><span>Technical &amp; engagement</span><span class="crit-pct">10%</span></div><p>An interactive dial, world map, year-sweep, city picker and optional voice — all running with zero backend.</p></div>
+        </div>
+      </div>
+
       <!-- Data Sources -->
       <div class="about-block">
-        <h3><span aria-hidden="true">📊</span> Data Sources</h3>
+        <h3><span aria-hidden="true">📊</span> Where the numbers come from</h3>
         <p class="about-note">All datasets are publicly available, peer-reviewed where possible, and cited.</p>
         <div class="table-wrap">
           <table class="src-table">
@@ -523,23 +560,33 @@
           </ul>
         </div>
         <div>
-          <h3><span aria-hidden="true">♿</span> Accessibility</h3>
+          <h3><span aria-hidden="true">♿</span> Made for everyone</h3>
           <ul class="about-list">
             <li>WCAG-AA contrast on the dark palette</li>
             <li>Keyboard-navigable world map (each country focusable)</li>
-            <li>Always-on captions for every narrated line</li>
+            <li>Captions for every narrated line; voice is optional</li>
+            <li>Key facts written in text, not locked inside the graphics</li>
             <li><code>prefers-reduced-motion</code> honored throughout</li>
           </ul>
         </div>
       </div>
 
+      <!-- AI, in the open -->
       <div class="about-block about-genai">
-        <h3><span aria-hidden="true">🤖</span> Built with GenAI</h3>
-        <p>Nominated for <strong>Best Use of GenAI</strong>. GenAI was used as a teammate across data discovery, the canvas engine, D3 charts, narration scripting, and the accessibility audit — with every published figure human-verified. Full log in <code>GENAI_USAGE.md</code>.</p>
+        <h3><span aria-hidden="true">🤖</span> AI, in the open</h3>
+        <p>This entry is nominated for <strong>Best Use of GenAI</strong> — and I want to be transparent about it. AI didn't come up with the idea or the feeling; a person did. But it let one human explore far more, iterate far faster, and finish something ambitious in days.</p>
+        <div class="ai-split">
+          <div class="ai-col"><h4>What was mine</h4><p>The topic, the emotional thread, my childhood memories, every editorial and taste call, and the final quality bar.</p></div>
+          <div class="ai-col"><h4>What AI sped up</h4><p>Boilerplate code for the canvas and charts, first-draft copy, debugging, source hunting, and wiring the interactions together.</p></div>
+          <div class="ai-col"><h4>What stayed human</h4><p>Fact-checking every number against the papers, and deciding what to cut so the story stayed honest and warm.</p></div>
+        </div>
+        <p class="about-note">Every published figure was checked against its primary source by hand. Full working log: <code>GENAI_USAGE.md</code>.</p>
       </div>
 
       <footer class="about-foot">
-        <p>The World After Dark · a data story by <strong>Sharath</strong> · narrated by <strong>Drasa</strong></p>
+        <p class="about-foot-name"><span aria-hidden="true">👤</span> <strong>Sharath</strong> · <a href="https://phonetool.amazon.com/users/jsharat" target="_blank" rel="noopener">phonetool/jsharat</a></p>
+        <p class="about-foot-line">Made in the belief that a chart should make you want to step outside and look up.</p>
+        <p>The World After Dark · narrated by Drasa · Analyticon 2026 · "How the world lives, thrives, and connects"</p>
       </footer>
     </div>
   </section>

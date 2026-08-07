@@ -46,6 +46,193 @@
   }
 
   /* =======================================================================
+     ACT 6.5 — "Your lifetime of lost stars" (birth-year personalization)
+     Star-count decline derived from Kyba 2023's own example: 250 -> 100 over
+     18 years  =>  stars * 0.4^(years/18)  (~5.2%/yr decline in visible stars).
+     ======================================================================= */
+  const birthInput = document.getElementById("birth-input");
+  const birthPlace = document.getElementById("birth-place");
+  const birthGo = document.getElementById("birth-go");
+  const birthResult = document.getElementById("birth-result");
+  const NOW_YEAR = 2026;
+  let lastBirth = null;
+
+  function countTo(el, from, to, dur) {
+    const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    if (reduce) { el.textContent = to; return; }
+    let t0 = null;
+    (function step(ts) {
+      if (!t0) t0 = ts;
+      const p = Math.min((ts - t0) / dur, 1);
+      el.textContent = Math.round(from + (to - from) * (1 - Math.pow(1 - p, 3)));
+      if (p < 1) requestAnimationFrame(step);
+    })(performance.now());
+  }
+
+  function runBirthYear() {
+    if (!birthInput) return;
+    let y = parseInt(birthInput.value, 10);
+    if (!y || y < 1930 || y > NOW_YEAR) { birthInput.focus(); birthInput.classList.add("shake"); setTimeout(() => birthInput.classList.remove("shake"), 500); return; }
+    const years = NOW_YEAR - y;
+    const base = birthPlace ? parseInt(birthPlace.value, 10) : 250;
+    const nowStars = Math.max(3, Math.round(base * Math.pow(0.4, years / 18)));
+    const pct = Math.round((1 - nowStars / base) * 100);
+    const placeText = birthPlace ? birthPlace.options[birthPlace.selectedIndex].text.replace(/^[^A-Za-z]+/, "") : "";
+    lastBirth = { base, nowStars, pct, years, placeText, year: y };
+    document.getElementById("birth-then").textContent = base.toLocaleString();
+    birthResult.hidden = false;
+    const shareBtn = document.getElementById("birth-share");
+    if (shareBtn) shareBtn.hidden = false;
+    countTo(document.getElementById("birth-now"), base, nowStars, 1400);
+    const verdict =
+        pct >= 90 ? "Almost the entire sky — quietly switched off in one lifetime."
+      : pct >= 70 ? "Most of your sky is already gone."
+      : pct >= 40 ? "Nearly half your stars have faded away."
+      : pct > 0   ? "It's already begun — and it's accelerating."
+      :             "You're brand new here — but the fading has already started.";
+    document.getElementById("birth-verdict").innerHTML =
+      years > 0
+        ? `In your <strong>${years} years</strong>, roughly <strong>${pct}%</strong> of the stars have faded from that sky. ${verdict}`
+        : verdict;
+  }
+  if (birthGo) birthGo.addEventListener("click", runBirthYear);
+  if (birthInput) birthInput.addEventListener("keydown", e => { if (e.key === "Enter") runBirthYear(); });
+
+  // shareable "sky card" — draws a PNG the visitor can download
+  function makeSkyCard() {
+    if (!lastBirth) return;
+    const W = 1080, H = 1080;
+    const c = document.createElement("canvas"); c.width = W; c.height = H;
+    const x = c.getContext("2d");
+    // background
+    const g = x.createLinearGradient(0, 0, 0, H);
+    g.addColorStop(0, "#0a1330"); g.addColorStop(0.55, "#070c1c"); g.addColorStop(1, "#04060d");
+    x.fillStyle = g; x.fillRect(0, 0, W, H);
+    // stars
+    for (let i = 0; i < 160; i++) {
+      const r = Math.random() * 1.8 + 0.3;
+      x.globalAlpha = 0.3 + Math.random() * 0.7;
+      x.fillStyle = "#eef3ff";
+      x.beginPath(); x.arc(Math.random() * W, Math.random() * H * 0.72, r, 0, 6.28); x.fill();
+    }
+    x.globalAlpha = 1;
+    x.textAlign = "center";
+    // header
+    x.fillStyle = "#5fe3ff"; x.font = "600 26px Georgia, serif";
+    x.fillText("THE WORLD AFTER DARK", W / 2, 130);
+    x.fillStyle = "#b8c4de"; x.font = "400 22px Arial, sans-serif";
+    x.fillText("The night sky I've been quietly losing", W / 2, 172);
+    // big percent
+    x.fillStyle = "#ffd27a"; x.font = "700 300px Georgia, serif";
+    x.fillText(lastBirth.pct + "%", W / 2, 520);
+    x.fillStyle = "#eef3ff"; x.font = "400 34px Georgia, serif";
+    x.fillText("of my stars have faded", W / 2, 585);
+    // then -> now
+    x.fillStyle = "#cdd6ff"; x.font = "600 40px Georgia, serif";
+    x.fillText(lastBirth.base.toLocaleString() + "  →  " + lastBirth.nowStars.toLocaleString() + "  stars", W / 2, 700);
+    x.fillStyle = "#8492ad"; x.font = "400 24px Arial, sans-serif";
+    x.fillText("since I was born" + (lastBirth.placeText ? " in " + lastBirth.placeText.toLowerCase() : ""), W / 2, 745);
+    // footer
+    x.fillStyle = "#5fe3ff"; x.font = "500 22px monospace";
+    x.fillText("jsharat-vanishing-sky.streamlit.app", W / 2, 960);
+    x.fillStyle = "#8492ad"; x.font = "400 18px Arial, sans-serif";
+    x.fillText("The World After Dark · Analyticon 2026 · by Sharath", W / 2, 995);
+    // download
+    const a = document.createElement("a");
+    a.download = "my-vanishing-sky.png";
+    a.href = c.toDataURL("image/png");
+    a.click();
+  }
+  const birthShare = document.getElementById("birth-share");
+  if (birthShare) birthShare.addEventListener("click", makeSkyCard);
+
+  /* =======================================================================
+     ACT 2.5 — drag-to-compare (then vs now)
+     ======================================================================= */
+  const compare = document.getElementById("compare");
+  if (compare) {
+    let dragging = false;
+    const setX = clientX => {
+      const r = compare.getBoundingClientRect();
+      const pct = Math.max(4, Math.min(96, ((clientX - r.left) / r.width) * 100));
+      compare.style.setProperty("--x", pct + "%");
+    };
+    compare.addEventListener("pointerdown", e => { dragging = true; setX(e.clientX); try { compare.setPointerCapture(e.pointerId); } catch (_) {} });
+    compare.addEventListener("pointermove", e => { if (dragging) setX(e.clientX); });
+    compare.addEventListener("pointerup", () => { dragging = false; });
+    compare.addEventListener("pointercancel", () => { dragging = false; });
+    const grip = document.getElementById("cmp-grip");
+    if (grip) grip.addEventListener("keydown", e => {
+      const cur = parseFloat(compare.style.getPropertyValue("--x")) || 50;
+      if (e.key === "ArrowLeft") { compare.style.setProperty("--x", Math.max(4, cur - 5) + "%"); e.preventDefault(); }
+      if (e.key === "ArrowRight") { compare.style.setProperty("--x", Math.min(96, cur + 5) + "%"); e.preventDefault(); }
+    });
+  }
+
+  /* =======================================================================
+     DRASA AUTO-GUIDE — plays the whole story hands-free (scroll + narrate)
+     ======================================================================= */
+  const tourBtn = document.getElementById("tour-toggle");
+  let touring = false, tourActs = [], tourIdx = 0;
+
+  function tourLabel(on) {
+    if (!tourBtn) return;
+    tourBtn.classList.toggle("playing", on);
+    tourBtn.querySelector(".hud-play").textContent = on ? "⏹" : "▶";
+    tourBtn.querySelector(".hud-label").textContent = on ? "Stop tour" : "Auto-guide";
+  }
+  function tourStop() {
+    if (!touring) return;
+    touring = false;
+    if (window.speechSynthesis) window.speechSynthesis.cancel();
+    tourLabel(false);
+  }
+  function tourNext() {
+    if (!touring) return;
+    if (tourIdx >= tourActs.length) { tourStop(); return; }
+    const act = tourActs[tourIdx++];
+    const y = (window.pageYOffset || document.documentElement.scrollTop || 0);
+    const top = Math.max(0, act.getBoundingClientRect().top + y);
+    window.scrollTo({ top, behavior: "smooth" });
+    const line = act.dataset.narrate || "";
+    setTimeout(() => {
+      if (!touring) return;
+      if (!line) { tourNext(); return; }
+      window.DRASA.speak(line, () => { if (touring) setTimeout(tourNext, 1100); });
+    }, 900);
+  }
+  function tourStart() {
+    tourActs = Array.from(document.querySelectorAll("#main .act[data-narrate]"));
+    if (!tourActs.length) return;
+    if (openPanelName) closePanel(true);
+    touring = true; tourIdx = 0;
+    if (window.DRASA.setEnabled) window.DRASA.setEnabled(true, true); // enable voice, skip intro
+    tourLabel(true);
+    setTimeout(tourNext, 400);
+  }
+  if (tourBtn) tourBtn.addEventListener("click", () => touring ? tourStop() : tourStart());
+
+  // first-load hint pointing at the Auto-guide
+  const tourHint = document.getElementById("tour-hint");
+  let hintDismissed = false;
+  function hideTourHint() {
+    if (!tourHint || hintDismissed) return;
+    hintDismissed = true;
+    tourHint.classList.remove("show");
+    setTimeout(() => { tourHint.hidden = true; }, 450);
+  }
+  if (tourHint) {
+    window.addEventListener("load", () => setTimeout(() => {
+      if (hintDismissed) return;
+      tourHint.hidden = false;
+      requestAnimationFrame(() => tourHint.classList.add("show"));
+      setTimeout(hideTourHint, 9000);
+    }, 1600));
+    if (tourBtn) tourBtn.addEventListener("click", hideTourHint);
+    window.addEventListener("scroll", () => { if (window.scrollY > 200) hideTourHint(); }, { passive: true });
+  }
+
+  /* =======================================================================
      SCROLLAMA
      ======================================================================= */
   const acts = document.querySelectorAll(".act");
@@ -107,23 +294,22 @@
      ACT 3 — Bortle simulator
      ======================================================================= */
   const slider = document.getElementById("bortle-slider");
-  const readout = document.getElementById("bortle-readout");
-  const bDesc = document.getElementById("bortle-desc");
-  const bStars = document.getElementById("bortle-stars");
-  const bMw = document.getElementById("bortle-mw");
-  const bWho = document.getElementById("bortle-who");
-
-  function updateBortle(v) {
-    const b = bortleByClass[v];
-    readout.textContent = `Class ${b.c} — ${b.name}`;
-    bDesc.textContent = b.desc;
-    bStars.textContent = b.stars;
-    bMw.textContent = b.mw;
-    bWho.textContent = b.who;
-    skyFromClass(b.c);   // live sky change behind the panel
+  if (slider) {   // Skydial section is optional; guard so its removal never breaks the page
+    const readout = document.getElementById("bortle-readout");
+    const bDesc = document.getElementById("bortle-desc");
+    const bStars = document.getElementById("bortle-stars");
+    const bMw = document.getElementById("bortle-mw");
+    const bWho = document.getElementById("bortle-who");
+    const updateBortle = v => {
+      const b = bortleByClass[v];
+      readout.textContent = `Class ${b.c} — ${b.name}`;
+      bDesc.textContent = b.desc; bStars.textContent = b.stars;
+      bMw.textContent = b.mw; bWho.textContent = b.who;
+      skyFromClass(b.c);
+    };
+    slider.addEventListener("input", e => updateBortle(+e.target.value));
+    updateBortle(+slider.value);
   }
-  slider.addEventListener("input", e => updateBortle(+e.target.value));
-  updateBortle(+slider.value);
 
   /* =======================================================================
      ACT 4 — world choropleth (Milky Way hidden %)
@@ -243,7 +429,8 @@
        <span class="cr-class" style="background:${tint.bg};color:${tint.fg}">
          Bortle ${c.bortle} · ${tint.label} · ${b.stars} stars</span>
        <p class="cr-line">${c.note}</p>
-       <p class="cr-line"><strong>Milky Way:</strong> ${b.mw}.</p>`;
+       <p class="cr-line"><strong>Milky Way:</strong> ${b.mw}.</p>
+       <p class="cr-line cr-contrast">From here you'd see about <strong>${b.stars}</strong> stars. From a truly dark mountaintop, you'd see <strong>~5,000</strong>.</p>`;
     skyFromClass(c.bortle);
   }
   sel.addEventListener("change", e => updateCity(+e.target.value));
@@ -322,21 +509,27 @@
   let openPanelName = null;
   let lastFocused = null;
 
-  const sectionNodes = nodes.filter(n => n.dataset.target !== undefined)
-    .map(n => ({ el: n, target: +n.dataset.target }))
-    .sort((a, b) => a.target - b.target);
+  // order-based nav highlight, driven by data-nav landmarks in DOM order
+  const navPills = nodes.filter(n => n.dataset.nav);
+  const landmarks = Array.from(document.querySelectorAll("[data-nav]")).map(el => ({ el, id: el.dataset.nav }));
+  function pillFor(id) { return navPills.find(n => n.dataset.nav === id); }
 
-  function setCurrentByAct(act) {
+  function setCurrent() {
     if (openPanelName) return;
-    let chosen = sectionNodes[0];
-    for (const s of sectionNodes) if (s.target <= act) chosen = s;
+    const mid = window.innerHeight * 0.5;
+    let currentId = landmarks.length ? landmarks[0].id : null;
+    for (const lm of landmarks) {
+      if (lm.el.getBoundingClientRect().top <= mid) currentId = lm.id;
+    }
     nodes.forEach(n => n.classList.remove("is-current"));
-    if (chosen) chosen.el.classList.add("is-current");
+    const pill = currentId ? pillFor(currentId) : null;
+    if (pill) pill.classList.add("is-current");
   }
 
   function openPanel(name) {
     const panel = panels[name];
     if (!panel) return;
+    if (typeof tourStop === "function") tourStop();
     // close any other open panel first
     if (openPanelName && openPanelName !== name) closePanel(true);
     lastFocused = document.activeElement;
@@ -362,17 +555,29 @@
     document.body.style.overflow = "";
     if (!silent) {
       if (lastFocused) lastFocused.focus();
-      const active = document.querySelector(".act.is-active");
-      setCurrentByAct(active ? +active.dataset.act : 0);
+      setCurrent();
     }
   }
 
   nodes.forEach(n => {
     n.addEventListener("click", () => {
       if (n.dataset.panel) { openPanel(n.dataset.panel); collapseNav(); return; }
-      if (openPanelName) closePanel();
-      const target = document.querySelector(`.act[data-act="${n.dataset.target}"]`);
-      if (target) target.scrollIntoView({ behavior: "smooth", block: "start" });
+      const wasOpen = !!openPanelName;
+      if (wasOpen) closePanel(true);
+      const target = document.querySelector(`[data-nav="${n.dataset.nav}"]`);
+      const doScroll = () => {
+        if (!target) return;
+        const y = (window.pageYOffset || document.documentElement.scrollTop || 0);
+        const top = Math.max(0, target.getBoundingClientRect().top + y);
+        window.scrollTo({ top, behavior: "smooth" });
+        // hard fallback in case a smooth-scroll gets interrupted
+        setTimeout(() => {
+          const still = Math.abs((window.pageYOffset || document.documentElement.scrollTop) - top);
+          if (still > 4) window.scrollTo(0, top);
+        }, 700);
+      };
+      // let the body regain scroll (overflow reset) before scrolling
+      if (wasOpen) setTimeout(doScroll, 80); else doScroll();
       collapseNav();
     });
   });
@@ -397,37 +602,9 @@
   // keep nav highlight synced to scroll
   document.addEventListener("scroll", () => {
     if (openPanelName) return;
-    const active = document.querySelector(".act.is-active");
-    if (active) setCurrentByAct(+active.dataset.act);
+    setCurrent();
   }, { passive: true });
+  setCurrent();
 
-  /* =======================================================================
-     FIRST-LOAD "HOW TO EXPLORE" HINT
-     ======================================================================= */
-  const useHint = document.getElementById("usehint");
-  const useHintClose = document.getElementById("usehint-close");
-  let hintShown = false, hintDone = false;
-  function showHint() {
-    if (hintShown || hintDone || !useHint) return;
-    hintShown = true;
-    useHint.hidden = false;
-    requestAnimationFrame(() => useHint.classList.add("show"));
-    setTimeout(hideHint, 11000);
-  }
-  function hideHint() {
-    if (!useHint) return;
-    hintDone = true;
-    useHint.classList.remove("show");
-    setTimeout(() => { useHint.hidden = true; }, 500);
-  }
-  if (useHintClose) useHintClose.addEventListener("click", hideHint);
-  document.addEventListener("boot:done", () => setTimeout(showHint, 650));
-  window.addEventListener("scroll", () => { if (window.scrollY > 160) hideHint(); }, { passive: true });
-  // fallback if the boot overlay was skipped or never fired
-  window.addEventListener("load", () => setTimeout(() => {
-    const boot = document.getElementById("boot");
-    if (!hintShown && (!boot || boot.style.display === "none" || boot.classList.contains("done"))) showHint();
-  }, 5000));
-
-  console.log("%c◆ The World After Dark — systems online", "color:#5fe3ff");
+  console.log("%c✦ The World After Dark", "color:#ffd27a");
 })();

@@ -23,10 +23,13 @@ window.DRASA = (function () {
   const eq = document.getElementById("jarvis-eq");
   const sub = document.getElementById("subtitle");
 
+  const subText = document.getElementById("subtitle-text");
+  const subClose = document.getElementById("subtitle-close");
   const supported = "speechSynthesis" in window;
   let enabled = false;
   let voice = null;
   let subTimer = null;
+  let captionsMuted = false;   // user closed captions with the × button
 
   function pickVoice() {
     if (!supported) return;
@@ -54,42 +57,81 @@ window.DRASA = (function () {
     speechSynthesis.onvoiceschanged = pickVoice;
   }
 
-  function showSubtitle(text) {
+  function hideSubtitle() {
+    sub.classList.remove("show");
     clearTimeout(subTimer);
-    sub.textContent = text;
-    sub.classList.add("show");
-    const dwell = Math.max(3800, text.length * 55);
+    subTimer = setTimeout(() => { sub.hidden = true; }, 350);
+  }
+
+  function showSubtitle(text) {
+    // captions appear only while Drasa voice is ON, and only if not dismissed
+    if (!enabled || captionsMuted) { hideSubtitle(); return; }
+    clearTimeout(subTimer);
+    subText.textContent = text;
+    sub.hidden = false;
+    requestAnimationFrame(() => sub.classList.add("show"));
+    const dwell = Math.max(4000, text.length * 55);
     subTimer = setTimeout(() => sub.classList.remove("show"), dwell);
   }
 
-  function speak(text) {
-    showSubtitle(text);               // captions always (accessibility)
-    if (!enabled || !supported) return;
+  // × closes captions for the session (re-enabling the voice brings them back)
+  if (subClose) subClose.addEventListener("click", () => { captionsMuted = true; hideSubtitle(); });
+
+  // make the caption box draggable so it never hides content
+  (function makeDraggable() {
+    let dragging = false, ox = 0, oy = 0;
+    sub.addEventListener("pointerdown", e => {
+      if (e.target === subClose) return;
+      dragging = true; sub.classList.add("dragging");
+      const r = sub.getBoundingClientRect();
+      ox = e.clientX - r.left; oy = e.clientY - r.top;
+      sub.style.transform = "none"; sub.style.right = "auto"; sub.style.bottom = "auto";
+      sub.setPointerCapture(e.pointerId);
+    });
+    sub.addEventListener("pointermove", e => {
+      if (!dragging) return;
+      sub.style.left = Math.max(6, Math.min(window.innerWidth - sub.offsetWidth - 6, e.clientX - ox)) + "px";
+      sub.style.top  = Math.max(6, Math.min(window.innerHeight - sub.offsetHeight - 6, e.clientY - oy)) + "px";
+    });
+    sub.addEventListener("pointerup", () => { dragging = false; sub.classList.remove("dragging"); });
+  })();
+
+  let _fallback = null;
+  function speak(text, onEnd) {
+    showSubtitle(text);               // captions only while voice is on (see showSubtitle)
+    clearTimeout(_fallback);
+    if (!enabled || !supported) {
+      if (onEnd) _fallback = setTimeout(onEnd, Math.max(3500, text.length * 45));
+      return;
+    }
     speechSynthesis.cancel();
     const u = new SpeechSynthesisUtterance(text);
     if (voice) u.voice = voice;
     // warm female delivery: unhurried but not sluggish, lowered pitch for warmth
     u.rate = 0.9; u.pitch = 0.8; u.volume = 1;
     u.onstart = () => eq.classList.add("speaking");
-    u.onend = () => eq.classList.remove("speaking");
-    u.onerror = () => eq.classList.remove("speaking");
+    u.onend = () => { eq.classList.remove("speaking"); if (onEnd) onEnd(); };
+    u.onerror = () => { eq.classList.remove("speaking"); if (onEnd) onEnd(); };
     speechSynthesis.speak(u);
   }
 
-  function setEnabled(on) {
+  function setEnabled(on, silent) {
     enabled = on;
     btn.setAttribute("aria-pressed", String(on));
-    stateEl.textContent = on ? "ON" : "OFF";
-    if (!on && supported) { speechSynthesis.cancel(); eq.classList.remove("speaking"); }
-    if (on) {
-      speak("I'm Drasa. Stay with me, and scroll slowly. I'll show you the sky we've been quietly losing.");
+    stateEl.textContent = on ? "on" : "off";
+    if (!on) {
+      if (supported) { speechSynthesis.cancel(); eq.classList.remove("speaking"); }
+      hideSubtitle();                 // voice off -> no captions
+    } else {
+      captionsMuted = false;          // turning voice on brings captions back
+      if (!silent) speak("I'm Drasa. Stay with me, and scroll slowly. I'll show you the sky we've been quietly losing.");
     }
   }
 
   btn.addEventListener("click", () => setEnabled(!enabled));
   if (!supported) { stateEl.textContent = "CAPTIONS"; btn.title = "Voice not supported here — captions will guide you"; }
 
-  return { speak, isEnabled: () => enabled };
+  return { speak, isEnabled: () => enabled, setEnabled };
 })();
 
 // Back-compat alias so any older reference keeps working.
