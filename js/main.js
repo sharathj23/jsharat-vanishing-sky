@@ -156,7 +156,7 @@
     x.fillText("since I was born" + (lastBirth.placeText ? " in " + lastBirth.placeText.toLowerCase() : ""), W / 2, 745);
     // footer
     x.fillStyle = "#5fe3ff"; x.font = "500 20px monospace";
-    x.fillText("sharathj23.github.io/jsharat-vanishing-sky", W / 2, 960);
+    x.fillText("sharathj23.github.io/jsharat-the-world-after-dark", W / 2, 960);
     x.fillStyle = "#8492ad"; x.font = "400 18px Arial, sans-serif";
     x.fillText("The World After Dark · Analyticon 2026 · by Sharath", W / 2, 995);
     // download
