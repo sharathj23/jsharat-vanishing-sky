@@ -18,6 +18,17 @@
 
   const SEQ_NAMES = ["INIT", "INHERIT", "VANISH", "SIMULATE", "MAP", "CITY", "TREND", "KNOW", "RECOVER", "LOOK-UP"];
 
+  // robust scroll that works both on a normal page and inside the Streamlit iframe
+  function scrollToEl(target) {
+    if (!target) return;
+    try { target.scrollIntoView({ behavior: "smooth", block: "start" }); } catch (_) {}
+    const sc = document.scrollingElement || document.documentElement || document.body;
+    if (sc) {
+      const top = Math.max(0, target.getBoundingClientRect().top + (sc.scrollTop || 0));
+      try { sc.scrollTo({ top, behavior: "smooth" }); } catch (_) { sc.scrollTop = top; }
+    }
+  }
+
   /* ---- "The sky we're switching off": hover-driven slider -> fading-sky canvas ---- */
   const fadeSlider = document.getElementById("fade-slider");
   const fadeYear = document.getElementById("fade-year-num");
@@ -191,7 +202,7 @@
     if (!touring) return;
     if (tourIdx >= tourActs.length) { tourStop(); return; }
     const act = tourActs[tourIdx++];
-    try { act.scrollIntoView({ behavior: "smooth", block: "start" }); } catch (e) { act.scrollIntoView(); }
+    scrollToEl(act);
     const line = act.dataset.narrate || "";
     setTimeout(() => {
       if (!touring) return;
@@ -563,15 +574,7 @@
       const wasOpen = !!openPanelName;
       if (wasOpen) closePanel(true);
       const target = document.querySelector(`[data-nav="${n.dataset.nav}"]`);
-      const doScroll = () => {
-        if (!target) return;
-        // scrollIntoView scrolls whatever container is actually scrollable —
-        // essential inside the Streamlit component iframe, where window.scrollTo
-        // targets the wrong scroller.
-        try { target.scrollIntoView({ behavior: "smooth", block: "start" }); }
-        catch (e) { target.scrollIntoView(); }
-      };
-      if (wasOpen) setTimeout(doScroll, 90); else doScroll();
+      if (wasOpen) setTimeout(() => scrollToEl(target), 90); else scrollToEl(target);
       collapseNav();
     });
   });
